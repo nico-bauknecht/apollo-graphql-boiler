@@ -40,6 +40,7 @@ const createUser = async () => {
 };
 
 const updateUser = async () => {
+  const { mutate } = useMutation(updateUserMutation);
   const variables = {
     id: id.value,
     name: name.value,
