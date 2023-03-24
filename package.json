@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.6",
+    "@vue/apollo-composable": "^4.0.0-alpha.12",
     "@types/node": "^18.15.7",
     "nuxt": "^3.3.1"
   }
