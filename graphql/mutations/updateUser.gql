@@ -4,7 +4,7 @@ mutation UpdateUser(
   $email: String!
   $password: String!
 ) {
-  update_test_by_pk(
+  update_users_by_pk(
     pk_columns: { id: $id }
     _set: { name: $name, email: $email, password: $password }
   ) {

@@ -6,6 +6,8 @@
     <input v-model="password" placeholder="Password" />
     <button @click="createUser">Create User</button>
     <button @click="updateUser">Update User</button>
+    <button @click="loginUser">Login</button>
+    <div v-if="loginToken">logged in</div>
     <p>{{}}</p>
   </div>
 </template>
@@ -14,9 +16,8 @@
 import { useMutation } from "@vue/apollo-composable";
 import createUserMutation from "~/graphql/mutations/createUser.gql";
 import updateUserMutation from "~/graphql/mutations/updateUser.gql";
+import loginUserMutation from "~/graphql/queries/loginUser.gql";
 import { ref } from "vue";
-
-const { mutate } = useMutation(createUserMutation);
 
 const id = ref("");
 const name = ref("");
@@ -25,6 +26,7 @@ const password = ref("");
 const message = ref("");
 
 const createUser = async () => {
+  const { mutate } = useMutation(createUserMutation);
   const variables = {
     name: name.value,
     email: email.value,
@@ -32,10 +34,10 @@ const createUser = async () => {
   };
   try {
     await mutate(variables);
-    message.value = "User created!";
+    console.log("User created!");
   } catch (error) {
     console.error(error);
-    message.value = "Error creating user.";
+    console.log("Error creating user.");
   }
 };
 
@@ -48,11 +50,32 @@ const updateUser = async () => {
     password: password.value,
   };
   try {
-    await mutate(variables);
-    message.value = "User updated!";
+    const result = await mutate(variables);
+    const { id, name, email } = result.data.users_by_pk;
+    console.log(`User ${name} with ID ${id} and email ${email} updated!`);
   } catch (error) {
     console.error(error);
-    message.value = "Error updating user.";
+    console.log("Error updating user.");
+  }
+};
+
+const loginUser = async () => {
+  const { mutate } = useMutation(loginUserMutation);
+  const variables = {
+    name: name.value,
+    password: password.value,
+  };
+  try {
+    const result = await mutate(variables);
+    const { id, name, email } = result.data.users_by_pk;
+    var loginToken = result.data.users_by_pk;
+    localStorage.setItem("loginToken", loginToken);
+    console.log(
+      `User ${name} with ID ${id} and email ${email} logged in successfully`
+    );
+  } catch (error) {
+    console.error(error);
+    console.log("Error logging in user.");
   }
 };
 </script>
