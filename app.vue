@@ -7,8 +7,14 @@
     <button @click="createUser">Create User</button>
     <button @click="updateUser">Update User</button>
     <button @click="loginUser">Login</button>
-    <div v-if="loginToken">logged in</div>
-    <p>{{}}</p>
+    <button @click="logoutUser">Logout</button>
+    <button @click="logToken">Console Log Token</button>
+    <div>
+      <p v-if="isLoggedIn">
+        Logged in as: {{ loginToken.name }} with email: {{ loginToken.email }}
+      </p>
+      <p v-else>Logged out</p>
+    </div>
   </div>
 </template>
 
@@ -17,13 +23,19 @@ import { useMutation } from "@vue/apollo-composable";
 import createUserMutation from "~/graphql/mutations/createUser.gql";
 import updateUserMutation from "~/graphql/mutations/updateUser.gql";
 import loginUserMutation from "~/graphql/queries/loginUser.gql";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import cookie from "cookie-universal-nuxt";
 
 const id = ref("");
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const message = ref("");
+const loginToken = ref("");
+const isLoggedIn = computed(() => {
+  return (
+    useCookie("loginToken") !== null && useCookie("loginToken") !== undefined
+  );
+});
 
 const createUser = async () => {
   const { mutate } = useMutation(createUserMutation);
@@ -69,7 +81,8 @@ const loginUser = async () => {
     const result = await mutate(variables);
     const { id, name, email } = result.data.users_by_pk;
     var loginToken = result.data.users_by_pk;
-    localStorage.setItem("loginToken", loginToken);
+    useCookie("loginToken", JSON.stringify(loginToken));
+    isLoggedIn.value = true;
     console.log(
       `User ${name} with ID ${id} and email ${email} logged in successfully`
     );
@@ -77,5 +90,16 @@ const loginUser = async () => {
     console.error(error);
     console.log("Error logging in user.");
   }
+  return loginToken;
+};
+
+const logoutUser = async () => {
+  localStorage.removeItem("loginToken");
+  console.log("User logged out.");
+};
+
+const logToken = async () => {
+  var tmpCookie = getCookie("loginToken");
+  console.log(tmpCookie);
 };
 </script>

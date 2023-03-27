@@ -9,8 +9,11 @@
   },
   "devDependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.6",
-    "@vue/apollo-composable": "^4.0.0-alpha.12",
     "@types/node": "^18.15.7",
+    "@vue/apollo-composable": "^4.0.0-alpha.12",
     "nuxt": "^3.3.1"
+  },
+  "dependencies": {
+    "cookie-universal-nuxt": "^2.2.2"
   }
 }
